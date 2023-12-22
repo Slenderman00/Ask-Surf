@@ -1,6 +1,7 @@
 from llama_cpp import Llama
 import os
 import time
+from pathlib import Path
 
 own_dir = Path(__file__).parent.absolute()
 
