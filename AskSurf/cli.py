@@ -79,7 +79,6 @@ def check_dolphin_service_running():
 
 def start_dolphin_service():
     """Start the Dolphin service"""
-    print("Starting the Dolphin service...")
 
     try:
         # create the question_pipe
