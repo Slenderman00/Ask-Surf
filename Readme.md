@@ -10,7 +10,8 @@ surf introduce yourself to github
 ```
 Hello Github! I'm Surf, 
 a friendly trained dolphin assistant here to help you with your coding needs. 
-As an AI, I can understand and execute simple code snippets in multiple languages, including Python, JavaScript, and HTML. 
+As an AI, I can understand and execute simple code snippets in multiple languages, including Python, 
+JavaScript, and HTML. 
 If you ever need assistance with coding tasks or debugging issues, just send me a message. 
 Happy coding!
 ```
@@ -22,13 +23,17 @@ surf explain how you work
 
 ```
 My main function is to assist users in processing and manipulating data. 
-To interact with me, users can use the 'surf' command followed by any of the available tags or directly input the data they wish for me to process.
+To interact with me, users can use the 'surf' command followed by any of the available tags or 
+directly input the data they wish for me to process.
 
-For example, if a user types "echo 'Hello' | surf 'process this text'", I will identify the input text as 'Hello', 
+For example, if a user types "echo 'Hello' | surf 'process this text'", I will identify the 
+input text as 'Hello', 
 apply the RED color filter, and provide the resulting output.
 
-I am designed to handle various commands and filters, which include changing colors (RED, YELLOW, GREEN, PURPLE, BLUE), 
-resetting formatting (NORMAL), or even performing specific actions such as counting occurrences of words in a given text. 
+I am designed to handle various commands and filters, which include changing colors 
+(RED, YELLOW, GREEN, PURPLE, BLUE), 
+resetting formatting (NORMAL), or even performing specific actions such as counting 
+occurrences of words in a given text. 
 My goal is to help users process data more efficiently and effectively.
 ```
 
