@@ -25,6 +25,7 @@ def main():
     # download the model
     if not model_exists():
         download_model(select_model())
+        return
 
     # parse the arguments
     parser = argparse.ArgumentParser(description="AskSurf CLI")
