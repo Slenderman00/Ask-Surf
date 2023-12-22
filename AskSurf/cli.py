@@ -93,7 +93,8 @@ def start_dolphin_service():
         pass
 
     # start the service
-    os.system("nohup python src/dolphin_service.py > /dev/null 2>&1 &")
+    path = own_dir / "model.gguf"
+    os.system(f"nohup python3 {path} > /dev/null 2>&1 &")
 
 
 def ask_dolphin(question):
