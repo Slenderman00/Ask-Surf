@@ -81,13 +81,13 @@ def start_dolphin_service():
 
     try:
         # create the question_pipe
-        os.mkfifo("./question_pipe")
+        os.mkfifo(own_dir / "question_pipe")
     except FileExistsError:
         pass
 
     try:
         # create the response_pipe
-        os.mkfifo("./response_pipe")
+        os.mkfifo(own_dir / "response_pipe")
     except FileExistsError:
         pass
 
@@ -98,17 +98,17 @@ def start_dolphin_service():
 def ask_dolphin(question):
     """Ask a question to Dolphin"""
     # Make sure the anwser pipe is empty
-    with open("./response_pipe", "w") as f:
+    with open(own_dir / "response_pipe", "w") as f:
         f.write("")
 
     # Write the question to the question_pipe
-    with open("./question_pipe", "w") as f:
+    with open(own_dir / "question_pipe", "w") as f:
         f.write(question)
 
     # wait for the response
     while True:
         # Check if the response_pipe has any content
-        with open("./response_pipe", "r") as f:
+        with open(own_dir / "response_pipe", "r") as f:
             content = f.read()
 
         if not content:
@@ -174,7 +174,7 @@ def select_model():
 
 def delete_model():
     """Delete the model"""
-    os.remove("model.gguf")
+    os.remove(own_dir / "model.gguf")
 
 
 def model_exists():
