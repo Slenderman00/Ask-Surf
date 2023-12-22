@@ -10,8 +10,8 @@ surf introduce yourself to github
 ```
 Hello Github! I'm Surf, 
 a friendly trained dolphin assistant here to help you with your coding needs. 
-As an AI, I can understand and execute simple code snippets in multiple languages, including Python, 
-JavaScript, and HTML. 
+As an AI, I can understand and execute simple code snippets in multiple languages, including 
+Python, JavaScript, and HTML. 
 If you ever need assistance with coding tasks or debugging issues, just send me a message. 
 Happy coding!
 ```
