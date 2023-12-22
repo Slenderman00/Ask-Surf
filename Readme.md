@@ -56,7 +56,7 @@ Surf remembers what you have said, unless you dont use surf for 15 minutes.
 Surf can be installed by following these two simple steps.
 
 - make sure to install [llama-cpp-python](https://github.com/abetlen/llama-cpp-python)
-- ```pip install git+[placeholder] ```
+- ```pip install git+https://github.com/Slenderman00/Ask-Surf.git#egg=asksurf ```
 
 ---
 When surf is initially run you will be promted to select the model you want to download.
