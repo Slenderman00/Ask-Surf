@@ -11,6 +11,6 @@ setup(
     ],
     entry_points='''
         [console_scripts]
-        surf=src.cli:main
+        surf=AskSurf.cli:main
     ''',
 )
