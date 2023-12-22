@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "AskSurf"
+version = "0.3"
+description = "A cli tool for interacting with the dolphin-mixtral-8x7B model"
+readme = "README.md"
+authors = [{name = "Joar Heimonen", email = "joarheimonen@live.no"}]
+license = "MIT"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
