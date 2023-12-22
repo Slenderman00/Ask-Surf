@@ -20,6 +20,14 @@ def parse_message(message):
     message = message.replace("[BLUE]", "\033[34m")
     message = message.replace("[NORMAL]", "\033[0m")
 
+    # replace all end tags with the normal color code
+    message = message.replace("[/RED]", "\033[0m")
+    message = message.replace("[/YELLOW]", "\033[0m")
+    message = message.replace("[/GREEN]", "\033[0m")
+    message = message.replace("[/PURPLE]", "\033[0m")
+    message = message.replace("[/BLUE]", "\033[0m")
+    message = message.replace("[/NORMAL]", "\033[0m")
+
     return message
 
 def main():
