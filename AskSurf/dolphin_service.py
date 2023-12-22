@@ -40,7 +40,7 @@ llm = Llama(
     chat_format="llama-2",
     verbose=False,
     use_mlock=True,
-    n_ctx=2048,
+    n_ctx=1024,
 )
 
 messages = [
@@ -94,8 +94,8 @@ while True:
     # ask the question
     anwser = llm(
         generate_prompt(messages),
-        max_tokens=1024,
-        temperature=0.9,
+        max_tokens=500,
+        temperature=0.7,
         top_p=1,
         frequency_penalty=0.02,
         presence_penalty=0.01,
