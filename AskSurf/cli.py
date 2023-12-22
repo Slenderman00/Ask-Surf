@@ -8,6 +8,8 @@ import sys
 from pathlib import Path
 
 own_dir = Path(__file__).parent.absolute()
+question_pipe = own_dir / "question_pipe"
+response_pipe = own_dir / "response_pipe"
 
 def parse_message(message):
     # replace the tags with the correct color codes
@@ -48,11 +50,9 @@ def main():
     # Join the list of arguments into a single string
     question = " ".join(args.question)
 
-    # If stdin is not empty, add a newline and the stdin to the question
+    # If stdin is not empty, append it to the question
     if not sys.stdin.isatty():
-        question += ":\n"
-        for line in sys.stdin:
-            question += line
+        question += " " + sys.stdin.read()
 
     if not check_dolphin_service_running():
         start_dolphin_service()
@@ -72,45 +72,46 @@ def check_dolphin_service_running():
             return True
 
     except subprocess.CalledProcessError:
-        pass
+        return False
 
     return False
 
 
 def start_dolphin_service():
     """Start the Dolphin service"""
+    print("Starting the Dolphin service...")
 
     try:
         # create the question_pipe
-        os.mkfifo(own_dir / "question_pipe")
+        os.mkfifo(question_pipe)
     except FileExistsError:
         pass
 
     try:
         # create the response_pipe
-        os.mkfifo(own_dir / "response_pipe")
+        os.mkfifo(response_pipe)
     except FileExistsError:
         pass
 
     # start the service
-    path = own_dir / "model.gguf"
+    path = own_dir / "dolphin_service.py"
     os.system(f"nohup python3 {path} > /dev/null 2>&1 &")
 
 
 def ask_dolphin(question):
     """Ask a question to Dolphin"""
     # Make sure the anwser pipe is empty
-    with open(own_dir / "response_pipe", "w") as f:
+    with open(response_pipe, "w") as f:
         f.write("")
 
     # Write the question to the question_pipe
-    with open(own_dir / "question_pipe", "w") as f:
+    with open(question_pipe, "w") as f:
         f.write(question)
 
     # wait for the response
     while True:
         # Check if the response_pipe has any content
-        with open(own_dir / "response_pipe", "r") as f:
+        with open(response_pipe, "r") as f:
             content = f.read()
 
         if not content:

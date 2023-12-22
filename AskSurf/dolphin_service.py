@@ -4,6 +4,9 @@ import time
 from pathlib import Path
 
 own_dir = Path(__file__).parent.absolute()
+question_pipe = own_dir / "question_pipe"
+response_pipe = own_dir / "response_pipe"
+
 
 def generate_prompt(messages):
     output = ""
@@ -21,13 +24,13 @@ last_used = time.time()
 
 try:
     # create the question_pipe
-    os.mkfifo(own_dir / "question_pipe")
+    os.mkfifo(question_pipe)
 except FileExistsError:
     pass
 
 try:
     # create the response_pipe
-    os.mkfifo(own_dir / "response_pipe")
+    os.mkfifo(response_pipe)
 except FileExistsError:
     pass
 
@@ -57,8 +60,9 @@ messages = [
 
 while True:
     # Check if the question_pipe has any content
-    with open(own_dir / "question_pipe", "r") as f:
+    with open(question_pipe, "r") as f:
         content = f.read().strip()
+        print(content)
 
     if not content:
         print("Waiting for a question...")
@@ -107,7 +111,7 @@ while True:
     )
 
     # write the anwser to the response_pipe
-    with open(own_dir / "response_pipe", "w") as f:
+    with open(response_pipe, "w") as f:
         f.write(anwser["choices"][0]["text"])
 
     # wait a bit
