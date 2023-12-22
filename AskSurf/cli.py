@@ -79,19 +79,6 @@ def check_dolphin_service_running():
 
 def start_dolphin_service():
     """Start the Dolphin service"""
-
-    try:
-        # create the question_pipe
-        os.mkfifo(question_pipe)
-    except FileExistsError:
-        pass
-
-    try:
-        # create the response_pipe
-        os.mkfifo(response_pipe)
-    except FileExistsError:
-        pass
-
     # start the service
     path = own_dir / "dolphin_service.py"
     os.system(f"nohup python3 {path} > /dev/null 2>&1 &")
