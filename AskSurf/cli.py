@@ -5,7 +5,9 @@ import tqdm
 import time
 import subprocess
 import sys
+from pathlib import Path
 
+own_dir = Path(__file__).parent.absolute()
 
 def parse_message(message):
     # replace the tags with the correct color codes
@@ -177,7 +179,7 @@ def delete_model():
 
 def model_exists():
     """Check if the model exists"""
-    return os.path.exists("model.gguf")
+    return os.path.exists(own_dir / "model.gguf")
 
 
 def download_model(name):
@@ -193,7 +195,7 @@ def download_model(name):
     total_size = int(r.headers.get("content-length", 0))
     block_size = 1024
     t = tqdm.tqdm(total=total_size, unit="iB", unit_scale=True)
-    with open("model.gguf", "wb") as f:
+    with open(own_dir / "model.gguf", "wb") as f:
         for data in r.iter_content(block_size):
             t.update(len(data))
             f.write(data)

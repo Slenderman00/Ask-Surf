@@ -2,6 +2,7 @@ from llama_cpp import Llama
 import os
 import time
 
+own_dir = Path(__file__).parent.absolute()
 
 def generate_prompt(messages):
     output = ""
@@ -31,7 +32,7 @@ except FileExistsError:
 
 
 llm = Llama(
-    model_path="./model.gguf",
+    model_path=own_dir / "model.gguf",
     chat_format="llama-2",
     verbose=False,
     use_mlock=True,
