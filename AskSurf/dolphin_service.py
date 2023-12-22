@@ -75,6 +75,10 @@ while True:
 
         continue
 
+    #clear the question_pipe
+    with open(question_pipe, "w") as f:
+        f.write("")
+
     # update the last_used time
     last_used = time.time()
 
