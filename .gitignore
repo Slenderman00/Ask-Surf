@@ -1,0 +1,6 @@
+model.gguf
+src/__pycache__/*
+AskDolphin.egg-info/*
+nohup.out
+response_pipe
+question_pipe
