@@ -8,7 +8,6 @@ version = "0.3"
 description = "A cli tool for interacting with the dolphin-mixtral-8x7B model"
 readme = "README.md"
 authors = [{name = "Joar Heimonen", email = "joarheimonen@live.no"}]
-license = "MIT"
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Programming Language :: Python :: 3",
