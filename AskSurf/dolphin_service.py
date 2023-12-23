@@ -37,10 +37,7 @@ except FileExistsError:
 
 llm = Llama(
     model_path=str(own_dir / "model.gguf"),
-    chat_format="llama-2",
     verbose=False,
-    use_mlock=True,
-    n_ctx=0,
 )
 
 messages = [
