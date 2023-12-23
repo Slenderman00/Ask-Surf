@@ -2,8 +2,10 @@ from llama_cpp import Llama
 import os
 import time
 from pathlib import Path
+from settings import load_settings
 
 own_dir = Path(__file__).parent.absolute()
+settings = load_settings()
 question_pipe = own_dir / "question_pipe"
 response_pipe = own_dir / "response_pipe"
 
@@ -38,10 +40,12 @@ success = False
 while not success:
     try:
         llm = Llama(
-            model_path=str(own_dir / "model.gguf"),
-            verbose=True,
-            n_ctx=2048,
-            n_gpu_layers=4,
+            model_path=settings["general"]["model_path"],
+            verbose=settings["general"]["verbose"],
+            n_ctx=settings["general"]["n_ctx"],
+            n_gpu_layers=settings["general"]["n_gpu_layers"],
+            use_nmap=settings["general"]["use_nmap"],
+            use_mlock=settings["general"]["use_mlock"],
         )
         success = True
     except RuntimeError:
@@ -82,7 +86,7 @@ while True:
 
         continue
 
-    #clear the question_pipe
+    # clear the question_pipe
     with open(question_pipe, "w") as f:
         f.write("")
 
@@ -101,11 +105,11 @@ while True:
     # ask the question
     anwser = llm(
         generate_prompt(messages),
-        max_tokens=4096,
-        temperature=0.7,
-        top_p=1,
-        frequency_penalty=0.02,
-        presence_penalty=0.01,
+        max_tokens=settings["general"]["max_tokens"],
+        temperature=settings["general"]["temperature"],
+        top_p=settings["general"]["top_p"],
+        frequency_penalty=settings["general"]["frequency_penalty"],
+        presence_penalty=settings["general"]["presence_penalty"],
         stop=["<|im_end|>"],
     )
 

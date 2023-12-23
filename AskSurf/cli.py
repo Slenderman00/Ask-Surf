@@ -7,10 +7,13 @@ import subprocess
 import sys
 from pathlib import Path
 from halo import Halo
+from .settings import load_settings, settings_exist, edit_settings
 
+settings = {}
 own_dir = Path(__file__).parent.absolute()
 question_pipe = own_dir / "question_pipe"
 response_pipe = own_dir / "response_pipe"
+
 
 def conditional_decorator(dec, condition):
     def decorator(func):
@@ -18,7 +21,9 @@ def conditional_decorator(dec, condition):
             # Return the function unchanged, not decorated.
             return func
         return dec(func)
+
     return decorator
+
 
 def parse_message(message):
     # replace the tags with the correct color codes
@@ -42,12 +47,20 @@ def parse_message(message):
     return message
 
 
+def init():
+    if not model_exists():
+        print("Please select a model")
+        download_model(select_model())
+
+    if not settings_exist():
+        print("Please make sure the settings are correct")
+        settings = load_settings()
+        exit(1)
+
+
 def main():
     """Main entry point for the application"""
-    # download the model
-    if not model_exists():
-        download_model(select_model())
-        return
+    init()
 
     # parse the arguments
     parser = argparse.ArgumentParser(description="AskSurf CLI")
@@ -74,6 +87,12 @@ def main():
         action="store_true",
         help="Kill the Dolphin service",
     )
+    parser.add_argument(
+        "--settings",
+        "-s",
+        action="store_true",
+        help="Edit the settings",
+    )
     args = parser.parse_args()
 
     if args.model:
@@ -86,6 +105,10 @@ def main():
 
     if args.kill:
         os.system("pkill -f dolphin_service.py")
+        return
+
+    if args.settings:
+        edit_settings()
         return
 
     # Join the list of arguments into a single string

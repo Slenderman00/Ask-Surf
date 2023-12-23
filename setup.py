@@ -9,6 +9,7 @@ setup(
         'requests',
         'tqdm',
         'halo',
+        'toml',
     ],
     entry_points='''
         [console_scripts]
