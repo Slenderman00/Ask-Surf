@@ -12,6 +12,13 @@ own_dir = Path(__file__).parent.absolute()
 question_pipe = own_dir / "question_pipe"
 response_pipe = own_dir / "response_pipe"
 
+def conditional_decorator(dec, condition):
+    def decorator(func):
+        if not condition:
+            # Return the function unchanged, not decorated.
+            return func
+        return dec(func)
+    return decorator
 
 def parse_message(message):
     # replace the tags with the correct color codes
@@ -118,7 +125,7 @@ def start_dolphin_service():
     os.system(f"nohup python3 {path} > /dev/null 2>&1 &")
 
 
-@Halo(text='Asking Dolphin...', spinner='dots')
+@conditional_decorator(Halo(text="Asking Dolphin...", spinner="dots"), sys.stdout.isatty())
 def ask_dolphin(question):
     """Ask a question to Dolphin"""
     # Make sure the anwser pipe is empty
