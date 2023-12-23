@@ -125,7 +125,7 @@ def start_dolphin_service():
     os.system(f"nohup python3 {path} > /dev/null 2>&1 &")
 
 
-@conditional_decorator(Halo(text="Asking Dolphin...", spinner="dots"), sys.stdout.isatty())
+@conditional_decorator(Halo(text="Asking Surf...", spinner="dots"), sys.stdout.isatty())
 def ask_dolphin(question):
     """Ask a question to Dolphin"""
     # Make sure the anwser pipe is empty
