@@ -109,6 +109,7 @@ def main():
 
     if args.settings:
         edit_settings()
+        os.system("pkill -f dolphin_service.py")
         return
 
     # Join the list of arguments into a single string
