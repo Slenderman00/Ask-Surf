@@ -34,13 +34,20 @@ try:
 except FileExistsError:
     pass
 
-
-llm = Llama(
-    model_path=str(own_dir / "model.gguf"),
-    verbose=True,
-    n_ctx=2048,
-    n_gpu_layers=2,
-)
+success = False
+while not success:
+    try:
+        llm = Llama(
+            model_path=str(own_dir / "model.gguf"),
+            verbose=True,
+            n_ctx=2048,
+            n_gpu_layers=5,
+        )
+        success = True
+    except RuntimeError:
+        print("Failed to load model, retrying in 5 seconds...")
+        time.sleep(5)
+        continue
 
 
 messages = [
