@@ -37,8 +37,11 @@ except FileExistsError:
 
 llm = Llama(
     model_path=str(own_dir / "model.gguf"),
-    verbose=False,
+    verbose=True,
+    n_ctx=2048,
+    n_gpu_layers=2,
 )
+
 
 messages = [
     {
