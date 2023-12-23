@@ -49,6 +49,7 @@ def main():
     parser.add_argument(
         "--model",
         "-m",
+        action="store_true",
         help="The model to use",
     )
     parser.add_argument(

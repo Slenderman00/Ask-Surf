@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='AskSurf',
-    version='0.5.2',
+    version='0.5.3',
     packages=find_packages(),
     include_package_data=True,
     install_requires=[
