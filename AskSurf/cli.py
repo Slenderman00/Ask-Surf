@@ -43,7 +43,7 @@ def main():
     parser = argparse.ArgumentParser(description="AskSurf CLI")
     parser.add_argument(
         "question",
-        nargs="+",
+        nargs=argparse.REMAINDER,
         help="The question to ask Dolphin",
     )
     parser.add_argument(
