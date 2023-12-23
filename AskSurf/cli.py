@@ -74,7 +74,7 @@ def main():
         return
 
     if args.kill:
-        os.system("killall dolphin_service.py")
+        os.system("pkill -f dolphin_service.py")
         return
 
     # Join the list of arguments into a single string
