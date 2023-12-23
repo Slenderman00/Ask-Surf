@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "AskSurf"
-version = "0.3"
+version = "0.4"
 description = "A cli tool for interacting with the dolphin-mixtral-8x7B model"
 readme = "README.md"
 license = {text = "MIT License"}
