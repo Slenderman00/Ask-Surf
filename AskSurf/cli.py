@@ -11,6 +11,7 @@ own_dir = Path(__file__).parent.absolute()
 question_pipe = own_dir / "question_pipe"
 response_pipe = own_dir / "response_pipe"
 
+
 def parse_message(message):
     # replace the tags with the correct color codes
     message = message.replace("[RED]", "\033[31m")
@@ -29,6 +30,7 @@ def parse_message(message):
     message = message.replace("[/NORMAL]", "\033[0m")
 
     return message
+
 
 def main():
     """Main entry point for the application"""
@@ -49,10 +51,30 @@ def main():
         "-m",
         help="The model to use",
     )
+    parser.add_argument(
+        "--delete",
+        "-d",
+        action="store_true",
+        help="Delete the model",
+    )
+    parser.add_argument(
+        "--kill",
+        "-k",
+        action="store_true",
+        help="Kill the Dolphin service",
+    )
     args = parser.parse_args()
 
     if args.model:
         download_model(select_model())
+        return
+
+    if args.delete:
+        delete_model()
+        return
+
+    if args.kill:
+        os.system("killall dolphin_service.py")
         return
 
     # Join the list of arguments into a single string
