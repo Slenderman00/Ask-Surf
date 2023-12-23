@@ -8,6 +8,8 @@ setup(
     install_requires=[
         'requests',
         'tqdm',
+        'crayons',
+        'halo',
     ],
     entry_points='''
         [console_scripts]

@@ -6,6 +6,7 @@ import time
 import subprocess
 import sys
 from pathlib import Path
+from halo import Halo
 
 own_dir = Path(__file__).parent.absolute()
 question_pipe = own_dir / "question_pipe"
@@ -125,6 +126,8 @@ def ask_dolphin(question):
     with open(question_pipe, "w") as f:
         f.write(question)
 
+    spinner = Halo(text="Waiting for a response...", spinner="dots")
+
     # wait for the response
     while True:
         # Check if the response_pipe has any content
@@ -136,6 +139,7 @@ def ask_dolphin(question):
             continue
 
         # return the response
+        spinner.stop()
         return content
 
 
