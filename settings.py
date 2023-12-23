@@ -9,8 +9,8 @@ settings = {
     "general": {
         "model_path": str(own_dir / "model.gguf"),
         "verbose": True,
-        "n_ctx": 2048,
-        "n_gpu_layers": 4,
+        "n_ctx": 4096,
+        "n_gpu_layers": 0,
         "use_nmap": True,
         "use_mlock": False,
         "max_tokens": 4096,
