@@ -7,6 +7,7 @@ name = "AskSurf"
 version = "0.3"
 description = "A cli tool for interacting with the dolphin-mixtral-8x7B model"
 readme = "README.md"
+license = "LICENSE"
 authors = [{name = "Joar Heimonen", email = "joarheimonen@live.no"}]
 classifiers = [
     "Development Status :: 3 - Alpha",
