@@ -116,6 +116,7 @@ def start_dolphin_service():
     os.system(f"nohup python3 {path} > /dev/null 2>&1 &")
 
 
+@Halo(text='Asking Dolphin...', spinner='dots')
 def ask_dolphin(question):
     """Ask a question to Dolphin"""
     # Make sure the anwser pipe is empty
@@ -125,8 +126,6 @@ def ask_dolphin(question):
     # Write the question to the question_pipe
     with open(question_pipe, "w") as f:
         f.write(question)
-
-    spinner = Halo(text="Waiting for a response...", spinner="dots")
 
     # wait for the response
     while True:
@@ -139,7 +138,6 @@ def ask_dolphin(question):
             continue
 
         # return the response
-        spinner.stop()
         return content
 
 
