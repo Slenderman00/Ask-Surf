@@ -50,7 +50,7 @@ messages = [
     },
     {
         "role": "system",
-        "content": "You can use the following tags: [RED], [YELLOW], [GREEN], [PURPLE], [BLUE], [NORMAL].",
+        "content": "You can use the following tags: [RED], [YELLOW], [ORANGE], [GREEN], [PURPLE], [BLUE], [NORMAL].",
     },
     {
         "role": "system",
