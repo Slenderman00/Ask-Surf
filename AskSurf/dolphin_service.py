@@ -41,7 +41,7 @@ while not success:
             model_path=str(own_dir / "model.gguf"),
             verbose=True,
             n_ctx=2048,
-            n_gpu_layers=5,
+            n_gpu_layers=4,
         )
         success = True
     except RuntimeError:
