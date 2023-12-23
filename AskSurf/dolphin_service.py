@@ -40,7 +40,7 @@ llm = Llama(
     chat_format="llama-2",
     verbose=False,
     use_mlock=True,
-    n_ctx=1024,
+    n_ctx=0,
 )
 
 messages = [
