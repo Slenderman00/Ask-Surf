@@ -1,4 +1,4 @@
-
+  
 # Ask Surf 🐬
 
 Surf is a CLI wrapper for llama_cpp_python used to interact with and mangage [TheBloke/dolphin-2.5-mixtral-8x7b-GGUF](https://huggingface.co/TheBloke/dolphin-2.5-mixtral-8x7b-GGUF)
@@ -48,13 +48,18 @@ or
 ```
 surf "tell me a joke"
 ```
----
-When using pipes the surf request must be encapsulated in quotation marks.
+You can pipe the text into the `surf` command followed by the action you want to perform. For example:
+
+```bash
+surf -h | surf 'Write a usage section for your own readme.md, this will be piped' > usage.md
 ```
-cat main.py | surf "create the readme for this project" > readme.md
+
+This command will prompt Surf to generate a settings section for the given text. You can also use the provided options (e.g., `-m`, `-d`, `-k`) with their respective actions (e.g., "--model", "--delete", "--kill") as needed:
+
+```bash
+surf [-h] [--model] [--delete] [--kill] [--settings] ...
 ```
-Surf can be used just like any other application.
-Surf remembers what you have said, unless you dont use surf for 15 minutes.
+
 
 ## Installation
 
@@ -65,6 +70,3 @@ Surf can be installed by following these two simple steps.
 
 ---
 When surf is initially run you will be promted to select the model you want to download.
-
-
-    
