@@ -3,16 +3,20 @@ import requests
 import argparse
 import tqdm
 import time
-import subprocess
 import sys
 from pathlib import Path
 from halo import Halo
-from .settings import load_settings, settings_exist, edit_settings
+
+try:
+    from .settings import load_settings, settings_exist, edit_settings
+except Exception as _:
+    from settings import load_settings, settings_exist, edit_settings
 
 settings = {}
 own_dir = Path(__file__).parent.absolute()
 question_pipe = own_dir / "question_pipe"
 response_pipe = own_dir / "response_pipe"
+status_pipe = own_dir / "status_pipe"
 
 
 def conditional_decorator(dec, condition):
@@ -128,16 +132,10 @@ def main():
 
 def check_dolphin_service_running():
     """Check if the Dolphin service is running"""
-    try:
-        # Use subprocess to run the command and capture output
-        output = subprocess.check_output(["ps", "-aux"]).decode("utf-8")
-
-        # Check if "dolphin_service.py" is in the output
-        if "dolphin_service.py" in output:
-            return True
-
-    except subprocess.CalledProcessError:
-        return False
+    if os.path.exists(status_pipe):
+        with open(status_pipe, "r") as f:
+            if time.time() - 15 > int(f.read):
+                return True
 
     return False
 
@@ -167,6 +165,9 @@ def ask_dolphin(question):
             content = f.read()
 
         if not content:
+            if not check_dolphin_service_running():
+                exit(0)
+
             time.sleep(1)
             continue
 
