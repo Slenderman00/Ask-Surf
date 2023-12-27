@@ -3,25 +3,11 @@ import os
 import time
 from pathlib import Path
 from settings import load_settings
-import threading
 
 own_dir = Path(__file__).parent.absolute()
 settings = load_settings()
 question_pipe = own_dir / "question_pipe"
 response_pipe = own_dir / "response_pipe"
-status_pipe = own_dir / "status_pipe"
-
-
-def status_writer():
-    try:
-        # create the question_pipe
-        os.mkfifo(status_pipe)
-    except FileExistsError:
-        pass
-    while True:
-        with open(status_pipe, "w") as f:
-            f.write(time.time())
-            time.sleep(5)
 
 
 def generate_prompt(messages):
@@ -67,9 +53,6 @@ while not success:
         time.sleep(5)
         continue
 
-
-# Writes down the time until the service crashes
-threading.Thread(target=status_writer).start()
 
 messages = [
     {
