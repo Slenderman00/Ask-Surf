@@ -3,6 +3,11 @@
 
 Surf is a CLI wrapper for llama_cpp_python used to interact with and mangage [TheBloke/dolphin-2.5-mixtral-8x7b-GGUF](https://huggingface.co/TheBloke/dolphin-2.5-mixtral-8x7b-GGUF)
 
+---
+![render1704381669109](https://github.com/Slenderman00/Ask-Surf/assets/24755365/636597bc-cc46-4038-8d09-030b4e3bc451)
+---
+
+
 ```
 surf introduce yourself to github
 ```
