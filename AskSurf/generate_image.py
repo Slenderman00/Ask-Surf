@@ -7,7 +7,7 @@ from diffusers import StableDiffusionPipeline
 import torch
 import random
 
-from settings import load_settings
+from .settings import load_settings
 settings = load_settings()
 
 model_id = settings['general']['image_model']

@@ -7,7 +7,7 @@ import subprocess
 import sys
 from pathlib import Path
 from halo import Halo
-from settings import load_settings, settings_exist, edit_settings
+from .settings import load_settings, settings_exist, edit_settings
 from contextlib import redirect_stdout, redirect_stderr
 
 # This should only be loaded when an image is about to be generated
