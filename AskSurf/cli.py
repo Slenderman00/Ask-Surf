@@ -7,7 +7,13 @@ import subprocess
 import sys
 from pathlib import Path
 from halo import Halo
-from .settings import load_settings, settings_exist, edit_settings
+from settings import load_settings, settings_exist, edit_settings
+from contextlib import redirect_stdout, redirect_stderr
+
+# This should only be loaded when an image is about to be generated
+with open('/dev/null', 'w') as null_file:
+    with redirect_stdout(null_file), redirect_stderr(null_file):
+        from .generate_image import generate_image
 
 settings = {}
 own_dir = Path(__file__).parent.absolute()
@@ -46,6 +52,32 @@ def parse_message(message):
 
     return message
 
+def limit_str_len(input_string, max_length):
+    if len(input_string) > max_length:
+        truncated_string = input_string[:max_length]
+        return truncated_string
+    else:
+        return input_string
+    
+def parse_images(message):
+    message.replace("[image]", "[IMAGE]")
+    message.replace("[/image]", "[/IMAGE]")
+    message = message.split("[IMAGE]")
+    i = 1
+    for section in message:
+        #print(message)
+        section = section.split("[/IMAGE]")
+        for subsection in section:
+            if i % 2 == 0:
+                with Halo(text='Drawing Image', spinner='dots'):
+                    name = generate_image(limit_str_len(subsection, 77))
+                path = os.path.join(os.getcwd(), name)
+                subprocess.run(['/usr/bin/viu', path])
+                print(f'{name} : {subsection}')
+            else: 
+                print(subsection.rstrip())
+        
+            i += 1
 
 def init():
     if not model_exists():
@@ -105,7 +137,7 @@ def main():
 
     if args.kill:
         os.system("pkill -f dolphin_service.py")
-        return
+        exit(0)
 
     if args.settings:
         edit_settings()
@@ -123,7 +155,7 @@ def main():
         start_dolphin_service()
 
     # ask the question
-    print(parse_message(ask_dolphin(question)))
+    parse_images(parse_message(ask_dolphin(question)))
 
 
 def check_dolphin_service_running():

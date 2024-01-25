@@ -18,6 +18,7 @@ settings = {
         "top_p": 1,
         "frequency_penalty": 0.02,
         "presence_penalty": 0.01,
+        "image_model": "stabilityai/stable-diffusion-2"
     }
 }
 
