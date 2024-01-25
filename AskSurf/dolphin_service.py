@@ -23,7 +23,6 @@ def generate_prompt(messages):
 
 last_used = time.time()
 
-
 try:
     # create the question_pipe
     os.mkfifo(question_pipe)
@@ -61,7 +60,19 @@ messages = [
     },
     {
         "role": "system",
-        "content": "You can use the following tags: [RED], [YELLOW], [ORANGE], [GREEN], [PURPLE], [BLUE], [NORMAL].",
+        "content": "You can use the following tags: [RED], [YELLOW], [ORANGE], [GREEN], [PURPLE], [BLUE], [NORMAL], [IMAGE]",
+    },
+    {
+        "role": "system",
+        "content": "The image tag: [IMAGE]description 1, description 2, description 3[/IMAGE] creates an image based on the the description tags and appends it to the text. DO NOT FORGET THE CLOSE TAG",
+    },
+    {
+        "role": "system",
+        "content": "Image tags can be inserted into text like this: this is text [IMAGE]blue eyes, green hair, tall, blue sky[/IMAGE] this is more text [IMAGE]Large tree, dark, scary[/IMAGE]. Note that text can have multiple image tags",
+    },
+    {
+        "role": "system",
+        "content": "Image tags must be used when the user asks for drawing, picture or image",
     },
     {
         "role": "system",
