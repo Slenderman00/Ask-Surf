@@ -65,6 +65,13 @@ This command will prompt Surf to generate a settings section for the given text.
 surf [-h] [--model] [--delete] [--kill] [--settings] ...
 ```
 
+## Images
+Surf can now draw images using [stabilityai/stable-diffusion-2](https://huggingface.co/stabilityai/stable-diffusion-2)
+```
+surf draw an image of youself
+```
+![](https://i.imgur.com/VJbNfEz.png)
+
 
 ## Installation
 
