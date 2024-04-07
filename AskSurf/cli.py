@@ -178,35 +178,35 @@ def select_model():
     """Select a model"""
     models = [
         {
-            "name": "dolphin-2.5-mixtral-8x7b.Q2_K.gguf",
+            "name": "dolphin-2.7-mixtral-8x7b.Q2_K.gguf",
             "description": "smallest, significant quality loss - not recommended for most purposes",
         },
         {
-            "name": "dolphin-2.5-mixtral-8x7b.Q3_K_M.gguf",
+            "name": "dolphin-2.7-mixtral-8x7b.Q3_K_M.gguf",
             "description": "very small, high quality loss",
         },
         {
-            "name": "dolphin-2.5-mixtral-8x7b.Q4_0.gguf",
+            "name": "dolphin-2.7-mixtral-8x7b.Q4_0.gguf",
             "description": "legacy; small, very high quality loss - prefer using Q3_K_M",
         },
         {
-            "name": "dolphin-2.5-mixtral-8x7b.Q4_K_M.gguf",
+            "name": "dolphin-2.7-mixtral-8x7b.Q4_K_M.gguf",
             "description": "medium, balanced quality - recommended",
         },
         {
-            "name": "dolphin-2.5-mixtral-8x7b.Q5_0.gguf",
+            "name": "dolphin-2.7-mixtral-8x7b.Q5_0.gguff",
             "description": "legacy; medium, balanced quality - prefer using Q4_K_M",
         },
         {
-            "name": "dolphin-2.5-mixtral-8x7b.Q5_K_M.gguf",
+            "name": "dolphin-2.7-mixtral-8x7b.Q5_K_M.gguf",
             "description": "large, very low quality loss - recommended",
         },
         {
-            "name": "dolphin-2.5-mixtral-8x7b.Q6_K.gguf",
+            "name": "dolphin-2.7-mixtral-8x7b.Q6_K.gguf",
             "description": "very large, extremely low quality loss",
         },
         {
-            "name": "dolphin-2.5-mixtral-8x7b.Q8_0.gguf",
+            "name": "dolphin-2.7-mixtral-8x7b.Q8_0.gguf",
             "description": "very large, extremely low quality loss - not recommended",
         },
     ]
@@ -239,7 +239,7 @@ def model_exists():
 
 def download_model(name):
     """Download the model from the server"""
-    url = f"https://huggingface.co/TheBloke/dolphin-2.5-mixtral-8x7b-GGUF/resolve/main/{name}?download=true"
+    url = f"https://huggingface.co/TheBloke/dolphin-2.7-mixtral-8x7b-GGUF/resolve/main/{name}?download=true"
 
     # check if the file exists
     if model_exists():
