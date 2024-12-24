@@ -58,7 +58,7 @@ def parse_message(message):
         start_index = message.index("[IMAGE]") + len("[IMAGE]")
         end_index = message.index("[/IMAGE]")
         image_path = message[start_index:end_index]
-        image_str = "\n" + climage.convert(image_path, is_unicode=True, width=50)
+        image_str = "\n" + climage.convert(image_path, is_unicode=True, width=100)
         message = message[:start_index - len("[IMAGE]")] + image_str + message[end_index + len("[/IMAGE]"):]
 
     return message
