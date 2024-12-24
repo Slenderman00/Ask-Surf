@@ -15,6 +15,10 @@ setup(
         'diffusers',
         'httpx',
         'llama-cpp-python==0.2.23',
+        'accelerate',
+        'climage',
+        'protobuf',
+        'sentencepiece'
     ],
     entry_points='''
         [console_scripts]

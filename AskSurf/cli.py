@@ -188,7 +188,7 @@ def ask_dolphin(question):
     if result.status_code != 200:
         raise Exception(f"Failed to get response: HTTP {result.status_code}")
 
-    return parse_message(result.json()['choices'][0]['text'])
+    return parse_message(result.text)
 
 
 def select_model():

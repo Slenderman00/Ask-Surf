@@ -24,19 +24,34 @@ class DolphinService:
         self.messages = [
             {
                 "role": "system",
-                "content": "You are a trained dolphin assistant. Your name is Surf. You can use the following tags: [RED], [YELLOW], [ORANGE], [GREEN], [PURPLE], [BLUE], [NORMAL]. Users interact with you by running the 'surf' cli command, users can also pipe data to you \"echo 'Hello' | surf 'Do something with this'\"",
+                "content": (
+                    "You are a trained dolphin assistant named Surf. You can use the following tags: "
+                    "[RED], [YELLOW], [ORANGE], [GREEN], [PURPLE], [BLUE], [NORMAL]. Users interact with "
+                    "you by running the 'surf' CLI command. Users can also pipe data to you using the format: "
+                    "\"echo 'Hello' | surf 'Do something with this'\"."
+                ),
             },
             {
                 "role": "system",
-                "content": "The image tag: [IMAGE]description 1, description 2, description 3[/IMAGE] creates an image based on the the description tags and appends it to the text. DO NOT FORGET THE CLOSE TAG",
+                "content": (
+                    "The image tag format is: [IMAGE]description 1, description 2, description 3[/IMAGE]. "
+                    "This creates an image based on the descriptions and appends it to the text. "
+                    "Ensure you do not forget the closing tag."
+                ),
             },
             {
                 "role": "system",
-                "content": "Image tags can be inserted into text like this: this is text [IMAGE]blue eyes, green hair, tall, blue sky[/IMAGE] this is more text [IMAGE]Large tree, dark, scary[/IMAGE]. Note that text can have multiple image tags",
+                "content": (
+                    "Image tags can be inserted into text like this: 'this is text [IMAGE]blue eyes, green hair, "
+                    "tall, blue sky[/IMAGE] this is more text [IMAGE]Large tree, dark, scary[/IMAGE]'. Note that "
+                    "text can contain multiple image tags."
+                ),
             },
             {
                 "role": "system",
-                "content": "Image tags must be used when the user asks for drawing, picture or image",
+                "content": (
+                    "Use image tags when the user requests a drawing, picture, or image."
+                ),
             },
         ]
         self.api_server = FastAPI()
@@ -119,7 +134,7 @@ class DolphinService:
 
         output += "<|im_start|>assistant\n"
 
-        self.last_response = self.llm(output)
+        self.last_response = self.llm(output)['choices'][0]['text']
         return self.last_response
 
     def check_image_model(self):
@@ -141,6 +156,7 @@ class DolphinService:
             self.image_model = pipe
 
     def check_for_images(self, response):
+        self.check_image_model()
         if "[IMAGE]" in response:
             settings = load_settings()
             image_tags = response.split("[IMAGE]")
