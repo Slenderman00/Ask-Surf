@@ -9,7 +9,8 @@ import asyncio
 import torch
 from diffusers import StableDiffusion3Pipeline
 import random
-
+import gc
+import torch
 
 class QuestionRequest(BaseModel):
     question: str
@@ -113,6 +114,8 @@ class DolphinService:
     def check_model(self):
         # unload the image model
         self.image_model = None
+        torch.cuda.empty_cache()
+        gc.collect()
         if self.llm is None:
             settings = load_settings()
 
@@ -139,6 +142,8 @@ class DolphinService:
 
     def check_image_model(self):
         self.llm = None
+        torch.cuda.empty_cache()
+        gc.collect()
         if self.image_model is None:
             settings = load_settings()
 
