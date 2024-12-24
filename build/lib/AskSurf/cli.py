@@ -164,27 +164,19 @@ def ask_dolphin(question):
     """Ask a question to Dolphin"""
     client = get_client()
     
-    response = client.post("/ask", json={
+    client.post("/ask", json={
         "question": question,
         "cwd": os.getcwd()
     })
-    if response.status_code != 200:
-        raise Exception(f"Failed to send question: HTTP {response.status_code}")
 
     while True:
         status_response = client.get("/status")
-        if status_response.status_code != 200:
-            raise Exception(f"Failed to get status: HTTP {status_response.status_code}")
-            
-        status = status_response.text
+        status = status_response.json()
         if status != "processing":
             break
         time.sleep(0.5)
 
     result = client.get("/response")
-    if result.status_code != 200:
-        raise Exception(f"Failed to get response: HTTP {result.status_code}")
-        
     return parse_message(result.json())
 
 

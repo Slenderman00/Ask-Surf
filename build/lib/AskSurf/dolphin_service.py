@@ -76,12 +76,12 @@ class DolphinService:
     async def get_status(self):
         """Non-blocking status check"""
         if self.current_task is None:
-            return "processing"
+            return "No question has been asked"
         if not self.current_task.done():
             return "processing"
         # Ensure we have a response
         if self.last_response is None:
-            return "processing"
+            return "No response available"
         return self.last_response
 
     async def await_get_response(self):

@@ -10,6 +10,10 @@ setup(
         'tqdm',
         'halo',
         'toml',
+        'transformers',
+        'torch',
+        'diffusers',
+        'httpx',
     ],
     entry_points='''
         [console_scripts]

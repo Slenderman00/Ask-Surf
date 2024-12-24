@@ -4,3 +4,10 @@ AskDolphin.egg-info/*
 nohup.out
 response_pipe
 question_pipe
+.venv/
+AskSurf.egg-info/dependency_links.txt
+AskSurf.egg-info/entry_points.txt
+AskSurf.egg-info/PKG-INFO
+AskSurf.egg-info/requires.txt
+AskSurf.egg-info/SOURCES.txt
+AskSurf.egg-info/top_level.txt
