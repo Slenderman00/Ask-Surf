@@ -61,6 +61,10 @@ def parse_message(message):
     message = message.replace("/n", "\n")
     message = message.replace("\\n", "\n")
 
+    # Make image tags all caps if they are not
+    message = message.replace("[image]", "[IMAGE]")
+    message = message.replace("[/image]", "[/IMAGE]")
+
     while "[IMAGE]" in message and "[/IMAGE]" in message:
         start_index = message.index("[IMAGE]") + len("[IMAGE]")
         end_index = message.index("[/IMAGE]")

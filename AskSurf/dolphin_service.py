@@ -12,6 +12,7 @@ import random
 import gc
 import torch
 
+
 class QuestionRequest(BaseModel):
     question: str
     cwd: str
@@ -130,7 +131,9 @@ class DolphinService:
 
         output += "<|im_start|>assistant\n"
 
-        self.last_response = self.llm(output)['choices'][0]['text']
+        settings = load_settings()
+        self.last_response = self.llm(output, max_tokens=settings["general"]["max_tokens"])['choices'][0]['text']
+        print(self.last_response)
         return self.last_response
 
     def check_image_model(self):
