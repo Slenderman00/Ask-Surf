@@ -112,16 +112,20 @@ def main():
         return
 
     if args.kill:
-        client = httpx.AsyncClient(transport=httpx.HTTPTransport(uds=SOCKET_PATH))
-        client.get("/kill")
+        try:
+            get_client().get("/kill")
+        except:
+            pass
         return
 
     if args.settings:
         edit_settings()
         # Restart service after settings change
         if check_dolphin_service():
-            client = httpx.AsyncClient(transport=httpx.HTTPTransport(uds=SOCKET_PATH))
-            client.get("/kill")
+            try:
+                get_client().get("/kill")
+            except:
+                pass
         return
     # Join the list of arguments into a single string
     question = " ".join(args.question)
@@ -130,13 +134,12 @@ def main():
     if not sys.stdin.isatty():
         question += " " + sys.stdin.read()
 
-    # Run async code
-    def run():
+    async def run():
         while not check_dolphin_service():
             start_dolphin_service()
             # Wait for service to start
-            time.sleep(5)
-        
+            await asyncio.sleep(5)
+
         result = ask_dolphin(question)
         print(result)
 
@@ -163,30 +166,29 @@ def start_dolphin_service():
 def ask_dolphin(question):
     """Ask a question to Dolphin"""
     client = get_client()
-    
+
     response = client.post("/ask", json={
         "question": question,
         "cwd": os.getcwd()
-    })
+    }, timeout=6000)
     if response.status_code != 200:
         raise Exception(f"Failed to send question: HTTP {response.status_code}")
 
     while True:
-        status_response = client.get("/status")
+        status_response = client.get("/status", timeout=6000)
         if status_response.status_code != 200:
             raise Exception(f"Failed to get status: HTTP {status_response.status_code}")
-            
+
         status = status_response.text
         if status != "processing":
             break
         time.sleep(0.5)
 
-    result = client.get("/response")
+    result = client.get("/response", timeout=6000)
     if result.status_code != 200:
         raise Exception(f"Failed to get response: HTTP {result.status_code}")
-        
-    return parse_message(result.json())
 
+    return parse_message(result.json()['choices'][0]['text'])
 
 
 def select_model():
@@ -256,19 +258,32 @@ def download_model(name):
     """Download the model from the server"""
     url = f"https://huggingface.co/TheBloke/dolphin-2.7-mixtral-8x7b-GGUF/resolve/main/{name}?download=true"
 
-    # check if the file exists
     if model_exists():
         delete_model()
 
-    # download the file
-    r = requests.get(url, stream=True)
-    total_size = int(r.headers.get("content-length", 0))
-    block_size = 1024
-    t = tqdm.tqdm(total=total_size, unit="iB", unit_scale=True)
-    with open(own_dir / "model.gguf", "wb") as f:
-        for data in r.iter_content(block_size):
-            t.update(len(data))
-            f.write(data)
+    try:
+        r = requests.get(url, stream=True, timeout=30)
+        r.raise_for_status()
+
+        total_size = int(r.headers.get("content-length", 0))
+        block_size = 1024
+        progress = 0
+
+        with tqdm.tqdm(total=total_size, unit="iB", unit_scale=True) as t:
+            with open(own_dir / "model.gguf", "wb") as f:
+                for data in r.iter_content(block_size):
+                    if data:
+                        progress += len(data)
+                        f.write(data)
+                        t.update(len(data))
+
+            if progress != total_size:
+                raise Exception("Downloaded size does not match expected size")
+
+    except Exception as e:
+        if os.path.exists(own_dir / "model.gguf"):
+            os.remove(own_dir / "model.gguf")
+        raise Exception(f"Download failed: {str(e)}")
 
 
 if __name__ == "__main__":

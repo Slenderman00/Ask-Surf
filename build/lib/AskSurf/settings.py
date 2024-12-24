@@ -8,7 +8,6 @@ own_dir = Path(__file__).parent.absolute()
 settings = {
     "general": {
         "model_path": str(own_dir / "model.gguf"),
-        "image_model_path": str(own_dir / "image_model.gguf"),
         "verbose": True,
         "n_ctx": 4096,
         "n_gpu_layers": 0,

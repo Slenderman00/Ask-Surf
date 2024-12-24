@@ -14,6 +14,7 @@ setup(
         'torch',
         'diffusers',
         'httpx',
+        'llama-cpp-python==0.2.23',
     ],
     entry_points='''
         [console_scripts]

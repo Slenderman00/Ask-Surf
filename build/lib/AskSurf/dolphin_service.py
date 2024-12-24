@@ -76,12 +76,12 @@ class DolphinService:
     async def get_status(self):
         """Non-blocking status check"""
         if self.current_task is None:
-            return "No question has been asked"
+            return "processing"
         if not self.current_task.done():
             return "processing"
         # Ensure we have a response
         if self.last_response is None:
-            return "No response available"
+            return "processing"
         return self.last_response
 
     async def await_get_response(self):
@@ -143,7 +143,7 @@ class DolphinService:
     def check_for_images(self, response):
         if "[IMAGE]" in response:
             settings = load_settings()
-            image_tags = self.last_response.split("[IMAGE]")
+            image_tags = response.split("[IMAGE]")
             for i in range(1, len(image_tags)):
                 image_description = image_tags[i].split("[/IMAGE]")[0]
                 image = self.image_model(image_description, num_inference_steps=settings["image"]["inference_steps"], guidance_scale=settings["image"]["guidance_scale"])
