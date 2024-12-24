@@ -138,6 +138,7 @@ class DolphinService:
         return self.last_response
 
     def check_image_model(self):
+        self.llm = None
         if self.image_model is None:
             settings = load_settings()
 

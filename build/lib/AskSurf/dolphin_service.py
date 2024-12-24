@@ -138,6 +138,7 @@ class DolphinService:
         return self.last_response
 
     def check_image_model(self):
+        self.llm = None
         if self.image_model is None:
             settings = load_settings()
 
@@ -162,7 +163,7 @@ class DolphinService:
             image_tags = response.split("[IMAGE]")
             for i in range(1, len(image_tags)):
                 image_description = image_tags[i].split("[/IMAGE]")[0]
-                image = self.image_model(image_description, num_inference_steps=settings["image"]["inference_steps"], guidance_scale=settings["image"]["guidance_scale"])
+                image = self.image_model(image_description, num_inference_steps=settings["image"]["inference_steps"], guidance_scale=settings["image"]["guidance_scale"], height=512, width=512).images[0]
                 # generate a random image id
                 image_id = random.randint(1000, 9999)
                 image.save(f"{self.cwd}/image_{image_id}.png")
