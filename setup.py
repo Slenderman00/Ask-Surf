@@ -18,7 +18,8 @@ setup(
         'accelerate',
         'climage==0.2.0',
         'protobuf',
-        'sentencepiece'
+        'sentencepiece',
+        'fastapi'
     ],
     entry_points='''
         [console_scripts]
