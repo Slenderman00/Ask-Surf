@@ -7,7 +7,7 @@ import uvicorn
 from pydantic import BaseModel
 import asyncio
 import torch
-from diffusers import StableDiffusion3Pipeline
+from diffusers import StableDiffusionPipeline
 import random
 import gc
 import torch
@@ -156,23 +156,21 @@ class DolphinService:
             elif settings["image"]["torch_dtype"] == "torch.bfloat16":
                 torch_dtype = torch.bfloat16
 
-            pipe = StableDiffusion3Pipeline.from_pretrained(settings["image"]["model"], device=settings["image"]["device"], torch_dtype=torch_dtype)
+            pipe = StableDiffusionPipeline.from_pretrained(settings["image"]["model"], device=settings["image"]["device"], torch_dtype=torch_dtype, safety_checker=None)
             pipe = pipe.to(settings["image"]["device"])
 
             self.image_model = pipe
 
     def check_for_images(self, response):
-        self.check_image_model()
         if "[IMAGE]" in response:
-            settings = load_settings()
             image_tags = response.split("[IMAGE]")
             for i in range(1, len(image_tags)):
                 image_description = image_tags[i].split("[/IMAGE]")[0]
-                image = self.image_model(image_description, num_inference_steps=settings["image"]["inference_steps"], guidance_scale=settings["image"]["guidance_scale"], height=512, width=512).images[0]
+                image = self.generate_image(image_description)
                 # generate a random image id
                 image_id = random.randint(1000, 9999)
                 image.save(f"{self.cwd}/image_{image_id}.png")
-                response = response.replace(f"[IMAGE]{image_description}[/IMAGE]", f"![image_{image_id}.png]({self.cwd}/image_{image_id}.png")
+                response = response.replace(f"[IMAGE]{image_description}[/IMAGE]", f"[IMAGE]{self.cwd}/image_{image_id}.png[/IMAGE]")
         return response
 
     def generate_image(self, image_description):
@@ -181,7 +179,8 @@ class DolphinService:
         self.check_image_model()
 
         # save the image to the self.cwd with a unique name
-        return self.image_model.generate_image(image_description, self.cwd)
+        settings = load_settings()
+        return self.image_model(image_description, num_inference_steps=settings["image"]["inference_steps"], guidance_scale=settings["image"]["guidance_scale"], height=512, width=512).images[0]
 
     def add_endpoint(self, endpoint, function, methods=None):
         """Add an endpoint to the API server

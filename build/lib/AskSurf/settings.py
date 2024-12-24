@@ -20,7 +20,7 @@ settings = {
         "presence_penalty": 0.01,
     },
     "image": {
-        "model": "tensorart/stable-diffusion-3.5-medium-turbo",
+        "model": "stabilityai/stable-diffusion-2",
         "device": "cuda",
         "torch_dtype": "torch.bfloat16",
         "inference_steps": 3,
