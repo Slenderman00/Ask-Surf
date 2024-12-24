@@ -19,7 +19,8 @@ setup(
         'climage==0.2.0',
         'protobuf',
         'sentencepiece',
-        'fastapi'
+        'fastapi',
+        'uvicorn'
     ],
     entry_points='''
         [console_scripts]
