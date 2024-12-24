@@ -16,7 +16,7 @@ setup(
         'httpx',
         'llama-cpp-python==0.2.23',
         'accelerate',
-        'climage',
+        'climage==0.2.0',
         'protobuf',
         'sentencepiece'
     ],

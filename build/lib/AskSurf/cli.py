@@ -9,6 +9,8 @@ import httpx
 from halo import Halo
 from .settings import load_settings, settings_exist, edit_settings
 import asyncio
+import climage
+
 
 settings = {}
 own_dir = Path(__file__).parent.absolute()
@@ -51,6 +53,13 @@ def parse_message(message):
     message = message.replace("[/PURPLE]", "\033[0m")
     message = message.replace("[/BLUE]", "\033[0m")
     message = message.replace("[/NORMAL]", "\033[0m")
+
+    while "[IMAGE]" in message and "[/IMAGE]" in message:
+        start_index = message.index("[IMAGE]") + len("[IMAGE]")
+        end_index = message.index("[/IMAGE]")
+        image_path = message[start_index:end_index]
+        image_str = "\n" + climage.convert(image_path, is_unicode=True, width=50)
+        message = message[:start_index - len("[IMAGE]")] + image_str + message[end_index + len("[/IMAGE]"):]
 
     return message
 

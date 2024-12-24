@@ -180,7 +180,8 @@ class DolphinService:
 
         # save the image to the self.cwd with a unique name
         settings = load_settings()
-        return self.image_model(image_description, num_inference_steps=settings["image"]["inference_steps"], guidance_scale=settings["image"]["guidance_scale"], height=512, width=512).images[0]
+        #  num_inference_steps=settings["image"]["inference_steps"], guidance_scale=settings["image"]["guidance_scale"], height=512, width=512
+        return self.image_model(image_description).images[0]
 
     def add_endpoint(self, endpoint, function, methods=None):
         """Add an endpoint to the API server
