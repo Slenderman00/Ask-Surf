@@ -57,7 +57,9 @@ def parse_message(message):
     message = message.replace("[/BLUE]", "\033[0m")
     message = message.replace("[/NORMAL]", "\033[0m")
 
+    message = message.replace('\"', '"')
     message = message.replace("/n", "\n")
+    message = message.replace("\\n", "\n")
 
     while "[IMAGE]" in message and "[/IMAGE]" in message:
         start_index = message.index("[IMAGE]") + len("[IMAGE]")
