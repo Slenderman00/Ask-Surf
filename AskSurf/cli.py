@@ -36,6 +36,9 @@ def conditional_decorator(dec, condition):
 
 
 def parse_message(message):
+    # remove the first and last characters
+    message = message[2:-1]
+
     # replace the tags with the correct color codes
     message = message.replace("[RED]", "\033[31m")
     message = message.replace("[YELLOW]", "\033[33m")
@@ -53,6 +56,8 @@ def parse_message(message):
     message = message.replace("[/PURPLE]", "\033[0m")
     message = message.replace("[/BLUE]", "\033[0m")
     message = message.replace("[/NORMAL]", "\033[0m")
+
+    message = message.replace("/n", "\n")
 
     while "[IMAGE]" in message and "[/IMAGE]" in message:
         start_index = message.index("[IMAGE]") + len("[IMAGE]")
