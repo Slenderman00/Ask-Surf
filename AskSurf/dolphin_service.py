@@ -10,7 +10,7 @@ import torch
 from diffusers import StableDiffusionPipeline
 import random
 import gc
-
+from fastapi import Response
 
 class QuestionRequest(BaseModel):
     question: str
@@ -45,6 +45,12 @@ class DolphinService:
                 "role": "system",
                 "content": (
                     "Use image tags when the user requests a drawing, picture, or image, try and use color tags without being prompted."
+                ),
+            },
+            {
+                "role": "system",
+                "content": (
+                    "Codeblocks can be created using the markdown format ```[language name] code here```"
                 ),
             },
         ]
@@ -93,13 +99,14 @@ class DolphinService:
         # Ensure we have a response
         if self.last_response is None:
             return "processing"
-        return self.last_response
+        return Response(content=self.last_response, media_type="text/plain")
 
     async def await_get_response(self):
         """Blocking wait for response"""
         if self.current_task is None:
             return "No question has been asked"
-        return await self.current_task
+        text = await self.current_task
+        return Response(content=text, media_type="text/plain")
 
     async def ask_model(self):
         resp = self.get_response()

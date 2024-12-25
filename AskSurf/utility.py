@@ -4,6 +4,10 @@ import docxpy
 import io
 import climage
 import re
+from pygments import highlight
+from pygments.lexers import get_lexer_by_name
+from pygments.formatters import TerminalFormatter
+from pygments.util import ClassNotFound
 
 
 def detect_file_type(data):
@@ -38,15 +42,24 @@ def handle_code_blocks(message):
         start_index = message.index(code_block_start) + len(code_block_start)
         end_index = message.index(code_block_end, start_index)
         code_block_content = message[start_index:end_index].strip()
-        # Extract the language or name from the first line
+
         lines = code_block_content.split("\n")
         if lines:
             code_name = lines[0].strip()
             code_body = "\n".join(lines[1:]).strip()
-            # Format the code block
+
+            try:
+                lexer = get_lexer_by_name(code_name)
+            except ClassNotFound:
+                lexer = None
+            if lexer:
+                formatted_code_body = highlight(code_body, lexer, TerminalFormatter())
+            else:
+                formatted_code_body = f"\033[36m{code_body}\033[0m"
+
             formatted_code_block = (
                 f"--- {code_name} ---\n"
-                f"\033[36m{code_body}\033[0m\n"  # Cyan color for code
+                f"{formatted_code_body}"
                 "--- end ---"
             )
             message = message[:start_index - len(code_block_start)] + formatted_code_block + message[end_index + len(code_block_end):]
@@ -54,9 +67,6 @@ def handle_code_blocks(message):
 
 
 def parse_message(message):
-    # remove the first and last characters
-    message = message[2:-1]
-
     # replace the tags with the correct color codes
     message = message.replace("[R]", "\033[31m")
     message = message.replace("[Y]", "\033[33m")
@@ -74,11 +84,6 @@ def parse_message(message):
     message = message.replace("[/P]", "\033[0m")
     message = message.replace("[/B]", "\033[0m")
     message = message.replace("[/N]", "\033[0m")
-
-    message = message.replace('\\"', '"')
-    message = message.replace('\"', '"')
-    message = message.replace("/n", "\n")
-    message = message.replace("\\n", "\n")
 
     # Make image tags all caps if they are not
     message = message.replace("[i]", "[I]")
