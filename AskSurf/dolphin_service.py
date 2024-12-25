@@ -12,6 +12,7 @@ import random
 import gc
 from fastapi import Response
 
+
 class QuestionRequest(BaseModel):
     question: str
     cwd: str
