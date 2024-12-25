@@ -14,7 +14,7 @@ setup(
         'torch',
         'diffusers',
         'httpx',
-        'llama-cpp-python==0.2.23',
+        'llama-cpp-python==0.2.90',
         'accelerate',
         'climage==0.2.0',
         'protobuf',
