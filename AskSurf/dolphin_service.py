@@ -172,15 +172,18 @@ class DolphinService:
             self.image_model = pipe
 
     def check_for_images(self, response):
-        if "[IMAGE]" in response:
-            image_tags = response.split("[IMAGE]")
+        response = response.replace("[i]", "[I]")
+        response = response.replace("[/i]", "[/I]")
+        
+        if "[I]" in response:
+            image_tags = response.split("[I]")
             for i in range(1, len(image_tags)):
-                image_description = image_tags[i].split("[/IMAGE]")[0]
+                image_description = image_tags[i].split("[/I]")[0]
                 image = self.generate_image(image_description)
                 # generate a random image id
                 image_id = random.randint(1000, 9999)
                 image.save(f"{self.cwd}/image_{image_id}.png")
-                response = response.replace(f"[IMAGE]{image_description}[/IMAGE]", f"[IMAGE]{self.cwd}/image_{image_id}.png[/IMAGE]")
+                response = response.replace(f"[I]{image_description}[/I]", f"[I]{self.cwd}/image_{image_id}.png[/I]")
         return response
 
     def generate_image(self, image_description):
