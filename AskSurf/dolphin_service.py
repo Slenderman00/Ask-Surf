@@ -173,6 +173,8 @@ class DolphinService:
             self.image_model = pipe
 
     def check_for_images(self, response):
+        settings = load_settings()
+
         response = response.replace("[i]", "[I]")
         response = response.replace("[/i]", "[/I]")
 
@@ -183,8 +185,13 @@ class DolphinService:
                 image = self.generate_image(image_description)
                 # generate a random image id
                 image_id = random.randint(1000, 9999)
-                image.save(f"{self.cwd}/image_{image_id}.png")
-                response = response.replace(f"[I]{image_description}[/I]", f"[I]{self.cwd}/image_{image_id}.png[/I]")
+                if settings["image"]["overwrite_path"]:
+                    path = settings["image"]["overwrite_path"]
+                    image.save(f"{path}/image_{image_id}.png")
+                    response = response.replace(f"[I]{image_description}[/I]", f"[I]{path}/image_{image_id}.png[/I]")
+                else:
+                    image.save(f"{self.cwd}/image_{image_id}.png")
+                    response = response.replace(f"[I]{image_description}[/I]", f"[I]{self.cwd}/image_{image_id}.png[/I]")
         return response
 
     def generate_image(self, image_description):

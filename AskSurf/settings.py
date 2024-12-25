@@ -26,6 +26,7 @@ settings = {
         "height": 768,
         "width": 768,
         'cli_image_width': 100,
+        'overwrite_path': False,
     },
 }
 
