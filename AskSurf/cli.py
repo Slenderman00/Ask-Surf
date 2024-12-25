@@ -81,7 +81,21 @@ def main():
         action="store_true",
         help="Edit the settings",
     )
+    parser.add_argument(
+        "--last",
+        "-l",
+        action="store_true",
+        help="Show the last response",
+    )
     args = parser.parse_args()
+
+    if args.last:
+        try:
+            response = get_client().get("/response")
+            print(parse_message(response.text))
+        except:
+            print("No response available")
+        return
 
     if args.model:
         download_model(select_model())
