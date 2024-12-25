@@ -45,9 +45,9 @@ def handle_code_blocks(message):
             code_body = "\n".join(lines[1:]).strip()
             # Format the code block
             formatted_code_block = (
-                f"\n--- {code_name} ---\n"
+                f"--- {code_name} ---\n"
                 f"\033[36m{code_body}\033[0m\n"  # Cyan color for code
-                "--- end ---\n"
+                "--- end ---"
             )
             message = message[:start_index - len(code_block_start)] + formatted_code_block + message[end_index + len(code_block_end):]
     return message
@@ -58,37 +58,38 @@ def parse_message(message):
     message = message[2:-1]
 
     # replace the tags with the correct color codes
-    message = message.replace("[RED]", "\033[31m")
-    message = message.replace("[YELLOW]", "\033[33m")
-    message = message.replace("[ORANGE]", "\033[33m")
-    message = message.replace("[GREEN]", "\033[32m")
-    message = message.replace("[PURPLE]", "\033[35m")
-    message = message.replace("[BLUE]", "\033[34m")
-    message = message.replace("[NORMAL]", "\033[0m")
+    message = message.replace("[R]", "\033[31m")
+    message = message.replace("[Y]", "\033[33m")
+    message = message.replace("[O]", "\033[33m")
+    message = message.replace("[G]", "\033[32m")
+    message = message.replace("[P]", "\033[35m")
+    message = message.replace("[B]", "\033[34m")
+    message = message.replace("[N]", "\033[0m")
 
     # replace all end tags with the normal color code
-    message = message.replace("[/RED]", "\033[0m")
-    message = message.replace("[/YELLOW]", "\033[0m")
-    message = message.replace("[/ORANGE]", "\033[0m")
-    message = message.replace("[/GREEN]", "\033[0m")
-    message = message.replace("[/PURPLE]", "\033[0m")
-    message = message.replace("[/BLUE]", "\033[0m")
-    message = message.replace("[/NORMAL]", "\033[0m")
+    message = message.replace("[/R]", "\033[0m")
+    message = message.replace("[/Y]", "\033[0m")
+    message = message.replace("[/O]", "\033[0m")
+    message = message.replace("[/G]", "\033[0m")
+    message = message.replace("[/P]", "\033[0m")
+    message = message.replace("[/B]", "\033[0m")
+    message = message.replace("[/N]", "\033[0m")
 
+    message = message.replace('\\"', '"')
     message = message.replace('\"', '"')
     message = message.replace("/n", "\n")
     message = message.replace("\\n", "\n")
 
     # Make image tags all caps if they are not
-    message = message.replace("[image]", "[IMAGE]")
-    message = message.replace("[/image]", "[/IMAGE]")
+    message = message.replace("[i]", "[I]")
+    message = message.replace("[/i]", "[/I]")
 
-    while "[IMAGE]" in message and "[/IMAGE]" in message:
-        start_index = message.index("[IMAGE]") + len("[IMAGE]")
-        end_index = message.index("[/IMAGE]")
+    while "[I]" in message and "[/I]" in message:
+        start_index = message.index("[I]") + len("[I]")
+        end_index = message.index("[/I]")
         image_path = message[start_index:end_index]
         image_str = "\n" + climage.convert(image_path, is_unicode=True, width=100)
-        message = message[:start_index - len("[IMAGE]")] + image_str + message[end_index + len("[/IMAGE]"):]
+        message = message[:start_index - len("[I]")] + image_str + message[end_index + len("[/I]"):]
 
     message = handle_code_blocks(message)
 
