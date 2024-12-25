@@ -8,6 +8,7 @@ from pygments import highlight
 from pygments.lexers import get_lexer_by_name
 from pygments.formatters import TerminalFormatter
 from pygments.util import ClassNotFound
+from .settings import load_settings
 
 
 def detect_file_type(data):
@@ -67,6 +68,8 @@ def handle_code_blocks(message):
 
 
 def parse_message(message):
+    settings = load_settings()
+
     message = message[1:]
 
     # replace the tags with the correct color codes
@@ -95,7 +98,7 @@ def parse_message(message):
         start_index = message.index("[I]") + len("[I]")
         end_index = message.index("[/I]")
         image_path = message[start_index:end_index]
-        image_str = "\n" + climage.convert(image_path, is_unicode=True, width=100)
+        image_str = climage.convert(image_path, is_unicode=True, width=settings['image']['width'])
         message = message[:start_index - len("[I]")] + image_str + message[end_index + len("[/I]"):]
 
     message = handle_code_blocks(message)

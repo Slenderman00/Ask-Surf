@@ -174,7 +174,7 @@ class DolphinService:
     def check_for_images(self, response):
         response = response.replace("[i]", "[I]")
         response = response.replace("[/i]", "[/I]")
-        
+
         if "[I]" in response:
             image_tags = response.split("[I]")
             for i in range(1, len(image_tags)):
@@ -187,6 +187,8 @@ class DolphinService:
         return response
 
     def generate_image(self, image_description):
+        settings = load_settings()
+
         # unload the current model
         self.llm = None
         self.check_image_model()
@@ -194,7 +196,7 @@ class DolphinService:
         # save the image to the self.cwd with a unique name
         settings = load_settings()
         #  num_inference_steps=settings["image"]["inference_steps"], guidance_scale=settings["image"]["guidance_scale"], height=512, width=512
-        return self.image_model(image_description).images[0]
+        return self.image_model(image_description, height=settings['image']['height'], width=settings['image']['width']).images[0]
 
     def add_endpoint(self, endpoint, function, methods=None):
         """Add an endpoint to the API server
