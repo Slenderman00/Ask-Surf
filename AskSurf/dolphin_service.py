@@ -10,7 +10,6 @@ import torch
 from diffusers import StableDiffusionPipeline
 import random
 import gc
-import torch
 
 
 class QuestionRequest(BaseModel):
@@ -77,6 +76,8 @@ class DolphinService:
             "content": request.question
         })
         self.cwd = request.cwd
+
+        print(f"Question received: {request.question}")
 
         # run ask_model in the background
         self.current_task = asyncio.create_task(self.ask_model())

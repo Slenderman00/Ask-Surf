@@ -8,8 +8,8 @@ from pathlib import Path
 import httpx
 from halo import Halo
 from .settings import load_settings, settings_exist, edit_settings
+from .utility import detect_file_type, extract_text_from_pdf, extract_text_from_docx, is_mimetype_docx, parse_message
 import asyncio
-import climage
 
 
 settings = {}
@@ -33,46 +33,6 @@ def conditional_decorator(dec, condition):
         return dec(func)
 
     return decorator
-
-
-def parse_message(message):
-    # remove the first and last characters
-    message = message[2:-1]
-
-    # replace the tags with the correct color codes
-    message = message.replace("[RED]", "\033[31m")
-    message = message.replace("[YELLOW]", "\033[33m")
-    message = message.replace("[ORANGE]", "\033[33m")
-    message = message.replace("[GREEN]", "\033[32m")
-    message = message.replace("[PURPLE]", "\033[35m")
-    message = message.replace("[BLUE]", "\033[34m")
-    message = message.replace("[NORMAL]", "\033[0m")
-
-    # replace all end tags with the normal color code
-    message = message.replace("[/RED]", "\033[0m")
-    message = message.replace("[/YELLOW]", "\033[0m")
-    message = message.replace("[/ORANGE]", "\033[0m")
-    message = message.replace("[/GREEN]", "\033[0m")
-    message = message.replace("[/PURPLE]", "\033[0m")
-    message = message.replace("[/BLUE]", "\033[0m")
-    message = message.replace("[/NORMAL]", "\033[0m")
-
-    message = message.replace('\"', '"')
-    message = message.replace("/n", "\n")
-    message = message.replace("\\n", "\n")
-
-    # Make image tags all caps if they are not
-    message = message.replace("[image]", "[IMAGE]")
-    message = message.replace("[/image]", "[/IMAGE]")
-
-    while "[IMAGE]" in message and "[/IMAGE]" in message:
-        start_index = message.index("[IMAGE]") + len("[IMAGE]")
-        end_index = message.index("[/IMAGE]")
-        image_path = message[start_index:end_index]
-        image_str = "\n" + climage.convert(image_path, is_unicode=True, width=100)
-        message = message[:start_index - len("[IMAGE]")] + image_str + message[end_index + len("[/IMAGE]"):]
-
-    return message
 
 
 def init():
@@ -152,7 +112,16 @@ def main():
 
     # If stdin is not empty, append it to the question
     if not sys.stdin.isatty():
-        question += " " + sys.stdin.read()
+        data = sys.stdin.buffer.read()
+        # Check if the data is a pdf
+        if detect_file_type(data) == "application/pdf":
+            question += " " + extract_text_from_pdf(data)
+        elif detect_file_type(data) == "text/plain":
+            question += " " + data.decode("utf-8")
+        elif is_mimetype_docx(detect_file_type(data)):
+            question += " " + extract_text_from_docx(data)
+        else:
+            question += " " + sys.stdin.read()
 
     async def run():
         while not check_dolphin_service():

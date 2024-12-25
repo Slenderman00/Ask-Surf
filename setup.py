@@ -20,7 +20,10 @@ setup(
         'protobuf',
         'sentencepiece',
         'fastapi',
-        'uvicorn'
+        'uvicorn',
+        'python-magic',
+        'pypdf2',
+        'docxpy',
     ],
     entry_points='''
         [console_scripts]
