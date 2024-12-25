@@ -98,7 +98,7 @@ def parse_message(message):
         start_index = message.index("[I]") + len("[I]")
         end_index = message.index("[/I]")
         image_path = message[start_index:end_index]
-        image_str = climage.convert(image_path, is_unicode=True, width=settings['image']['width'])
+        image_str = climage.convert(image_path, is_unicode=True, width=settings['image']['cli_image_width'])
         message = message[:start_index - len("[I]")] + image_str + message[end_index + len("[/I]"):]
 
     message = handle_code_blocks(message)

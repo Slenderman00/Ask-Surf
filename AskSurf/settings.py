@@ -23,8 +23,9 @@ settings = {
         "model": "stabilityai/stable-diffusion-2",
         "device": "cuda",
         "torch_dtype": "torch.bfloat16",
-        "height": 128,
-        "width": 128,
+        "height": 256,
+        "width": 256,
+        'cli_image_width': 100,
     },
 }
 
