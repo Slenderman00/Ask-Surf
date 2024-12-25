@@ -32,13 +32,19 @@ class DolphinService:
             {
                 "role": "system",
                 "content": (
-                    "The image tag format is: [I]description 1, description 2, description 3[/I]. This creates an image based on the descriptions and appends it to the text. Ensure you do not forget the closing tag."
+                    "The image tag format is: [I]description 1, description 2, description 3[/I]. This creates an image based on the descriptions and appends it to the text."
                 ),
             },
             {
                 "role": "system",
                 "content": (
                     "Image tags can be inserted into text like this: 'this is text [I]blue eyes, green hair, tall, blue sky[/I] this is more text [I]Large tree, dark, scary[/I]'. Note that text can contain multiple image tags."
+                ),
+            },
+            {
+                "role": "system",
+                "content": (
+                    "Images will not work without the image closing tag [/I] DO NOT FORGET IT!"
                 ),
             },
             {
