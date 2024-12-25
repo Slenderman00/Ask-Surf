@@ -67,6 +67,8 @@ def handle_code_blocks(message):
 
 
 def parse_message(message):
+    message = message[1:]
+
     # replace the tags with the correct color codes
     message = message.replace("[R]", "\033[31m")
     message = message.replace("[Y]", "\033[33m")
