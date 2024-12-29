@@ -24,7 +24,7 @@ setup(
         'python-magic',
         'pypdf2',
         'docxpy',
-        'pygments'
+        'pygments',
     ],
     entry_points='''
         [console_scripts]

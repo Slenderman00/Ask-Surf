@@ -11,6 +11,7 @@ from pygments.util import ClassNotFound
 from .settings import load_settings
 import shutil
 
+
 def detect_file_type(data):
     """Detect the file type of the data"""
     file_type = magic.Magic(mime=True)
@@ -56,14 +57,9 @@ def handle_code_blocks(message):
             if lexer:
                 formatted_code_body = highlight(code_body, lexer, TerminalFormatter())
             else:
-                formatted_code_body = f"\033[36m{code_body}\033[0m"
+                formatted_code_body = f"\033[36m{code_name} {code_body}\033[0m"
 
-            formatted_code_block = (
-                f"--- {code_name} ---\n"
-                f"{formatted_code_body}"
-                "--- end ---"
-            )
-            message = message[:start_index - len(code_block_start)] + formatted_code_block + message[end_index + len(code_block_end):]
+            message = message[:start_index - len(code_block_start)] + formatted_code_body + message[end_index + len(code_block_end):]
     return message
 
 
