@@ -51,7 +51,7 @@ class DolphinService:
             {
                 "role": "system",
                 "content": (
-                    "Use image tags when the user requests a drawing, picture, or image, try and use color tags without being prompted."
+                    "Use image tags when the user requests a drawing, picture, or image, try and use color tags without being asked. Never use the image tag without being asked directly."
                 ),
             },
             {
