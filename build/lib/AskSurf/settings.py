@@ -23,8 +23,10 @@ settings = {
         "model": "stabilityai/stable-diffusion-2",
         "device": "cuda",
         "torch_dtype": "torch.bfloat16",
-        "inference_steps": 3,
-        "guidance_scale": 0.5,
+        "height": 768,
+        "width": 768,
+        'cli_image_width': 100,
+        'overwrite_path': False,
     },
 }
 

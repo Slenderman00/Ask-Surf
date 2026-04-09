@@ -11,4 +11,4 @@ AskSurf.egg-info/PKG-INFO
 AskSurf.egg-info/requires.txt
 AskSurf.egg-info/SOURCES.txt
 AskSurf.egg-info/top_level.txt
-build/
+build/lib/AskSurf/
