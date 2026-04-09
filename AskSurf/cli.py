@@ -1,292 +1,287 @@
 import os
-import requests
-import argparse
-import tqdm
-import time
 import sys
+import time
+import json
+import argparse
 from pathlib import Path
 import httpx
 from halo import Halo
-from .settings import load_settings, settings_exist, edit_settings
+from .settings import load_settings, settings_exist, edit_settings, resolve_model, get_model_path
 from .utility import detect_file_type, extract_text_from_pdf, extract_text_from_docx, is_mimetype_docx, parse_message
-import asyncio
 
 
-settings = {}
-own_dir = Path(__file__).parent.absolute()
-SOCKET_PATH = "/tmp/dolphin.sock"
+own_dir     = Path(__file__).parent.absolute()
+SOCKET_PATH = "/tmp/surf.sock"
 
 
 def get_client():
-    """Create and return HTTP client"""
     return httpx.Client(
         transport=httpx.HTTPTransport(uds=SOCKET_PATH),
-        base_url="http://localhost"
+        base_url="http://localhost",
     )
 
 
 def conditional_decorator(dec, condition):
     def decorator(func):
         if not condition:
-            # Return the function unchanged, not decorated.
             return func
         return dec(func)
-
     return decorator
 
 
-def init():
-    if not model_exists():
-        print("Please select a model")
-        download_model(select_model())
-
-    if not settings_exist():
-        print("Please make sure the settings are correct")
-        settings = load_settings()  # noqa: F841
-        exit(1)
-
-
-def main():
-    """Main entry point for the application"""
-    init()
-
-    # parse the arguments
-    parser = argparse.ArgumentParser(description="AskSurf CLI")
-    parser.add_argument(
-        "question",
-        nargs=argparse.REMAINDER,
-        help="The question to ask Dolphin",
-    )
-    parser.add_argument(
-        "--model",
-        "-m",
-        action="store_true",
-        help="The model to use",
-    )
-    parser.add_argument(
-        "--delete",
-        "-d",
-        action="store_true",
-        help="Delete the model",
-    )
-    parser.add_argument(
-        "--kill",
-        "-k",
-        action="store_true",
-        help="Kill the Dolphin service",
-    )
-    parser.add_argument(
-        "--settings",
-        "-s",
-        action="store_true",
-        help="Edit the settings",
-    )
-    parser.add_argument(
-        "--last",
-        "-l",
-        action="store_true",
-        help="Show the last response",
-    )
-    args = parser.parse_args()
-
-    if args.last:
-        try:
-            response = get_client().get("/response")
-            print(parse_message(response.text))
-        except:
-            print("No response available")
-        return
-
-    if args.model:
-        download_model(select_model())
-        return
-
-    if args.delete:
-        delete_model()
-        return
-
-    if args.kill:
-        try:
-            get_client().get("/kill")
-        except:
-            pass
-        return
-
-    if args.settings:
-        edit_settings()
-        # Restart service after settings change
-        if check_dolphin_service():
-            try:
-                get_client().get("/kill")
-            except:
-                pass
-        return
-    # Join the list of arguments into a single string
-    question = " ".join(args.question)
-
-    # If stdin is not empty, append it to the question
-    if not sys.stdin.isatty():
-        data = sys.stdin.buffer.read()
-        # Check if the data is a pdf
-        if detect_file_type(data) == "application/pdf":
-            question += " " + extract_text_from_pdf(data)
-        elif detect_file_type(data) == "text/plain":
-            question += " " + data.decode("utf-8")
-        elif is_mimetype_docx(detect_file_type(data)):
-            question += " " + extract_text_from_docx(data)
-        else:
-            question += " " + sys.stdin.read()
-
-    async def run():
-        while not check_dolphin_service():
-            start_dolphin_service()
-            # Wait for service to start
-            await asyncio.sleep(5)
-
-        result = ask_dolphin(question)
-        print(result)
-
-    asyncio.run(run())
-
-
-def check_dolphin_service():
-    """Check if FastAPI service is running"""
-    client = get_client()
+def check_surf_service():
     try:
-        client.get("/")
+        get_client().get("/", timeout=2)
         return True
     except:
         return False
 
 
-def start_dolphin_service():
-    """Start the FastAPI dolphin service"""
+def start_surf_service():
     path = own_dir / "dolphin_service.py"
     os.system(f"nohup python3 {path} > /dev/null 2>&1 &")
 
 
-@conditional_decorator(Halo(text="Asking Surf...", spinner="dots"), sys.stdout.isatty())
-def ask_dolphin(question):
-    """Ask a question to Dolphin"""
-    client = get_client()
+def kill_surf_service():
+    try:
+        get_client().get("/kill")
+    except:
+        pass
+
+
+def handle_pending_prompt(client):
+    """check if the service is waiting for user input and handle it"""
+    response = client.get("/prompt", timeout=10)
+    if response.text == "none":
+        return
+
+    try:
+        prompt = json.loads(response.text)
+    except:
+        return
+
+    question    = prompt.get("question", "")
+    prompt_type = prompt.get("prompt_type", "text")
+    choices     = prompt.get("choices", [])
+
+    print()
+
+    if prompt_type == "confirm":
+        while True:
+            answer = input(f"  {question} [y/n]: ").strip().lower()
+            if answer in ("y", "yes"):
+                answer = "true"
+                break
+            elif answer in ("n", "no"):
+                answer = "false"
+                break
+            print("  Please answer y or n")
+
+    elif prompt_type == "choice":
+        print(f"  {question}")
+        for i, choice in enumerate(choices, 1):
+            print(f"  {i}. {choice}")
+        while True:
+            try:
+                idx = int(input(f"  Select [1-{len(choices)}]: ").strip()) - 1
+                if 0 <= idx < len(choices):
+                    answer = choices[idx]
+                    break
+            except (ValueError, KeyboardInterrupt):
+                pass
+            print(f"  Please enter a number between 1 and {len(choices)}")
+
+    else:
+        answer = input(f"  {question}: ").strip()
+
+    print()
+
+    client.post("/prompt/answer", json={"answer": answer}, timeout=10)
+
+
+def ask_surf(question, verbose=False, trace=False):
+    client  = get_client()
+    spinner = Halo(text="Asking Surf...", spinner="dots")
+
+    if sys.stdout.isatty():
+        spinner.start()
 
     response = client.post("/ask", json={
         "question": question,
-        "cwd": os.getcwd()
+        "cwd":      os.getcwd(),
+        "verbose":  verbose,
+        "trace":    trace,
     }, timeout=6000)
+
     if response.status_code != 200:
+        spinner.stop()
         raise Exception(f"Failed to send question: HTTP {response.status_code}")
 
     while True:
         status_response = client.get("/status", timeout=6000)
+
         if status_response.status_code != 200:
+            spinner.stop()
             raise Exception(f"Failed to get status: HTTP {status_response.status_code}")
 
         status = status_response.text
-        if status != "processing":
+
+        if status.startswith("prompt:"):
+            spinner.stop()
+            handle_pending_prompt(client)
+            if sys.stdout.isatty():
+                spinner.start()
+            continue
+
+        if status == "done":
             break
+
         time.sleep(0.5)
 
+    spinner.stop()
+
     result = client.get("/response", timeout=6000)
+
     if result.status_code != 200:
         raise Exception(f"Failed to get response: HTTP {result.status_code}")
 
     return parse_message(result.text)
 
 
-def select_model():
-    """Select a model"""
-    models = [
-        {
-            "name": "dolphin-2.7-mixtral-8x7b.Q2_K.gguf",
-            "description": "smallest, significant quality loss - not recommended for most purposes",
-        },
-        {
-            "name": "dolphin-2.7-mixtral-8x7b.Q3_K_M.gguf",
-            "description": "very small, high quality loss",
-        },
-        {
-            "name": "dolphin-2.7-mixtral-8x7b.Q4_0.gguf",
-            "description": "legacy; small, very high quality loss - prefer using Q3_K_M",
-        },
-        {
-            "name": "dolphin-2.7-mixtral-8x7b.Q4_K_M.gguf",
-            "description": "medium, balanced quality - recommended",
-        },
-        {
-            "name": "dolphin-2.7-mixtral-8x7b.Q5_0.gguff",
-            "description": "legacy; medium, balanced quality - prefer using Q4_K_M",
-        },
-        {
-            "name": "dolphin-2.7-mixtral-8x7b.Q5_K_M.gguf",
-            "description": "large, very low quality loss - recommended",
-        },
-        {
-            "name": "dolphin-2.7-mixtral-8x7b.Q6_K.gguf",
-            "description": "very large, extremely low quality loss",
-        },
-        {
-            "name": "dolphin-2.7-mixtral-8x7b.Q8_0.gguf",
-            "description": "very large, extremely low quality loss - not recommended",
-        },
-    ]
+def init():
+    # resolve and download happen here in the foreground so the
+    # progress bar is visible — the service never needs to download
+    settings = load_settings()
+    settings = resolve_model(settings)
+    get_model_path(settings)
 
-    print("Select a model:")
-    for i, model in enumerate(models):
-        print(f"{i + 1}. {model['name']} - {model['description']}")
 
-    while True:
+def main():
+    parser = argparse.ArgumentParser(description="Surf CLI", add_help=True)
+
+    parser.add_argument(
+        "prompt",
+        nargs=argparse.REMAINDER,
+        help="The prompt to send to Surf",
+    )
+    parser.add_argument(
+        "--kill", "-k",
+        action="store_true",
+        help="Kill the Surf service",
+    )
+    parser.add_argument(
+        "--settings", "-s",
+        action="store_true",
+        help="Edit settings",
+    )
+    parser.add_argument(
+        "--model", "-m",
+        action="store_true",
+        help="Pick and download a new model",
+    )
+    parser.add_argument(
+        "--delete", "-d",
+        action="store_true",
+        help="Delete the current model",
+    )
+    parser.add_argument(
+        "--last", "-l",
+        action="store_true",
+        help="Show the last response",
+    )
+    parser.add_argument(
+        "-v",
+        action="store_true",
+        help="Verbose — show tool calls and arguments as they execute",
+    )
+    parser.add_argument(
+        "-x",
+        action="store_true",
+        help="Trace — show full pipe resolution tree with inputs and outputs",
+    )
+
+    args = parser.parse_args()
+
+    if args.kill:
+        kill_surf_service()
+        return
+
+    if args.settings:
+        edit_settings()
+        # restart so the service picks up new settings
+        if check_surf_service():
+            kill_surf_service()
+        return
+
+    if args.model:
+        from .settings import pick_model_file, save_settings
+        settings = load_settings()
+        chosen   = pick_model_file(settings["general"]["model_repo"])
+        settings["general"]["model_file"] = chosen
+        save_settings(settings)
+        # kill so the service reloads with the new model
+        if check_surf_service():
+            kill_surf_service()
+        return
+
+    if args.delete:
+        from .settings import load_settings as ls, save_settings as ss, MODELS_DIR
+        settings = ls()
+        model_file = settings["general"].get("model_file", "")
+        if model_file:
+            path = MODELS_DIR / Path(model_file).name
+            if path.exists():
+                path.unlink()
+                print(f"Deleted {path}")
+            settings["general"]["model_file"] = ""
+            ss(settings)
+        return
+
+    if args.last:
         try:
-            selection = int(input("Selection: "))
-            if selection < 1 or selection > len(models):
-                raise ValueError()
-            break
-        except ValueError:
-            print("Invalid selection")
+            response = get_client().get("/response", timeout=10)
+            print(parse_message(response.text))
+        except:
+            print("No response available")
+        return
 
-    return models[selection - 1]["name"]
+    init()
 
+    # build the prompt from positional args
+    question = " ".join(args.prompt).strip()
 
-def delete_model():
-    """Delete the model"""
-    os.remove(own_dir / "model.gguf")
+    # prepend stdin if piped
+    if not sys.stdin.isatty():
+        data = sys.stdin.buffer.read()
+        mime = detect_file_type(data)
 
+        if mime == "application/pdf":
+            stdin_text = extract_text_from_pdf(data)
+        elif mime == "text/plain":
+            stdin_text = data.decode("utf-8")
+        elif is_mimetype_docx(mime):
+            stdin_text = extract_text_from_docx(data)
+        else:
+            stdin_text = data.decode("utf-8", errors="replace")
 
-def model_exists():
-    """Check if the model exists"""
-    return os.path.exists(own_dir / "model.gguf")
+        if question:
+            question = stdin_text + "\n" + question
+        else:
+            question = stdin_text
 
+    if not question:
+        parser.print_help()
+        return
 
-def download_model(name):
-    """Download the model from the server"""
-    url = f"https://huggingface.co/TheBloke/dolphin-2.7-mixtral-8x7b-GGUF/resolve/main/{name}?download=true"
+    # start the service if it isn't running
+    if not check_surf_service():
+        print("Starting Surf...")
+        start_surf_service()
+        while not check_surf_service():
+            time.sleep(1)
 
-    if model_exists():
-        delete_model()
-
-    try:
-        r = requests.get(url, stream=True, timeout=30)
-        r.raise_for_status()
-
-        total_size = int(r.headers.get("content-length", 0))
-        block_size = 1024
-        progress = 0
-
-        with tqdm.tqdm(total=total_size, unit="iB", unit_scale=True) as t:
-            with open(own_dir / "model.gguf", "wb") as f:
-                for data in r.iter_content(block_size):
-                    if data:
-                        progress += len(data)
-                        f.write(data)
-                        t.update(len(data))
-
-            if progress != total_size:
-                raise Exception("Downloaded size does not match expected size")
-
-    except Exception as e:
-        if os.path.exists(own_dir / "model.gguf"):
-            os.remove(own_dir / "model.gguf")
-        raise Exception(f"Download failed: {str(e)}")
+    result = ask_surf(question, verbose=args.v, trace=args.x)
+    print(result)
 
 
 if __name__ == "__main__":

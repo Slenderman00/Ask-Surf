@@ -1,33 +1,27 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='AskSurf',
-    version='0.6.4',
+    name="AskSurf",
+    version="3.0.0",
     packages=find_packages(),
     include_package_data=True,
     install_requires=[
-        'requests',
-        'tqdm',
-        'halo',
-        'toml',
-        'transformers',
-        'torch',
-        'diffusers',
-        'httpx',
-        'llama-cpp-python==0.2.90',
-        'accelerate',
-        'climage==0.2.0',
-        'protobuf',
-        'sentencepiece',
-        'fastapi',
-        'uvicorn',
-        'python-magic',
-        'pypdf2',
-        'docxpy',
-        'pygments',
+        "llama-cpp-python",
+        "huggingface_hub",
+        "fastapi",
+        "uvicorn",
+        "httpx",
+        "toml",
+        "halo",
+        "pygments",
+        "climage",
+        "python-magic",
+        "pypdf2",
+        "docxpy",
+        "requests",
     ],
-    entry_points='''
+    entry_points="""
         [console_scripts]
         surf=AskSurf.cli:main
-    ''',
+    """,
 )
